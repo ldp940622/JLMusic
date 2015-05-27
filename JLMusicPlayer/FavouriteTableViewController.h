@@ -11,6 +11,7 @@
 #import "ViewController.h"
 #import "PlayerSingleton.h"
 #import "TableViewCell.h"
+#import "MBProgressHUD.h"
 
 @interface FavouriteTableViewController : UITableViewController
 @property (strong, nonatomic) NSArray *songsList;

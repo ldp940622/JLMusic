@@ -14,6 +14,7 @@
 #import "SongListTableViewController.h"
 #import "PlayerSingleton.h"
 #import "UIImageView+AFNetworking.h"
+#import "MBProgressHUD.h"
 
 @interface ViewController : UIViewController <STKAudioPlayerDelegate>
 

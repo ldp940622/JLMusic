@@ -17,16 +17,19 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-
-	// Uncomment the following line to preserve selection between presentations.
-	// self.clearsSelectionOnViewWillAppear = NO;
-
-	// Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-	// self.navigationItem.rightBarButtonItem = self.editButtonItem;
-
+    // 隐藏表格线
+    [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
+	MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:self.tableView animated:YES];
+    hud.labelText = @"Loading...";
 	[Song getData: ^(NSArray *songsList) {
-	    self.songsList = [Song getSongsList:songsList];
-	    [self.tableView reloadData];
+	    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+			self.songsList = [Song getSongsList:songsList];
+            [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLine];
+			[self.tableView reloadData];
+			dispatch_async(dispatch_get_main_queue(), ^{
+				[MBProgressHUD hideHUDForView:self.view animated:YES];
+			});
+		});
 	}];
 }
 
@@ -64,18 +67,20 @@
 //
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	ViewController *viewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"ViewController"];
-    
-    // 定义选择的歌曲
-    Song *selectedSong = [self.songsList objectAtIndex:indexPath.row];
-    // 将player的歌曲定义成这个
-    [PlayerSingleton sharedInstance].song = selectedSong;
-    if (![self isExist:selectedSong]) {
-        // 如果播放列表中不存在这首歌,则添加到播放列表
-        [[PlayerSingleton sharedInstance].songListArray addObject:selectedSong];
-    }
+
+	// 定义选择的歌曲
+	Song *selectedSong = [self.songsList objectAtIndex:indexPath.row];
+	// 将player的歌曲定义成这个
+	[PlayerSingleton sharedInstance].song = selectedSong;
+	if (![self isExist:selectedSong]) {
+		// 如果播放列表中不存在这首歌,则添加到播放列表
+		[[PlayerSingleton sharedInstance].songListArray addObject:selectedSong];
+	}
 	[self.navigationController pushViewController:viewController animated:YES];
 }
 
+#pragma mark - Aciton
+#pragma -
 //
 // TODO:点击添加按钮的事件
 //
