@@ -17,14 +17,14 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-    // 隐藏表格线
-    [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
-	MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:self.tableView animated:YES];
-    hud.labelText = @"Loading...";
+	// 隐藏表格线
+	[self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
+	MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.tableView animated:YES];
+	hud.labelText = @"Loading...";
 	[Song getData: ^(NSArray *songsList) {
 	    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
 			self.songsList = [Song getSongsList:songsList];
-            [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLine];
+			[self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLine];
 			[self.tableView reloadData];
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -59,6 +59,7 @@
 	song = [self.songsList objectAtIndex:indexPath.row];
 	cell.textLabel.text = song.songName;
 	cell.addBtn.tag = indexPath.row;
+	cell.textLabel.highlightedTextColor = [UIColor redColor];
 	return cell;
 }
 
@@ -67,7 +68,6 @@
 //
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	ViewController *viewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"ViewController"];
-
 	// 定义选择的歌曲
 	Song *selectedSong = [self.songsList objectAtIndex:indexPath.row];
 	// 将player的歌曲定义成这个

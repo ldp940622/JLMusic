@@ -14,6 +14,7 @@
 @property (strong, nonatomic) STKAudioPlayer *player;
 @property (strong, nonatomic) Song *song;
 @property (strong, nonatomic) NSMutableArray *songListArray;
+//@property (nonatomic) NSInteger tag;
 
 + (PlayerSingleton *)sharedInstance;
 @end

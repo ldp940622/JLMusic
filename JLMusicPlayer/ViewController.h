@@ -26,8 +26,11 @@
 @property (retain, nonatomic) NSTimer *timer;
 @property (strong, nonatomic) IBOutlet UIButton *playBtn;
 @property (strong, nonatomic) IBOutlet UIImageView *img;
+@property (nonatomic)NSInteger tag;
 - (IBAction)playAction:(id)sender;
 - (IBAction)listAction:(id)sender;
+- (IBAction)playNextAction:(id)sender;
+- (IBAction)playPreviousAction:(id)sender;
 
 
 @end

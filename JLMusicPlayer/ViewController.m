@@ -18,7 +18,7 @@
 	[super viewDidLoad];
 	self.player = [PlayerSingleton sharedInstance].player;
 	self.player.delegate = self;
-    [self playerInit];
+	[self playerInit];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -53,6 +53,14 @@
 	[self.navigationController pushViewController:songList animated:YES];
 }
 
+- (IBAction)playNextAction:(id)sender {
+	[self playNext];
+}
+
+- (IBAction)playPreviousAction:(id)sender {
+    [self playPrevious];
+}
+
 - (void)playerInit {
 	if ([PlayerSingleton sharedInstance].song) {
 		// 如果播放歌曲存在
@@ -69,10 +77,37 @@
 			[self.player play:[PlayerSingleton sharedInstance].song.mp3Url];
 		}
 	}
-
+	self.tag = [[PlayerSingleton sharedInstance].songListArray indexOfObject:[PlayerSingleton sharedInstance].song];
 	[self.img setImageWithURL:[NSURL URLWithString:[PlayerSingleton sharedInstance].song.imgUrl]];
 	self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(playProgress:) userInfo:nil repeats:YES];
 	[self.progress addTarget:self action:@selector(changeProgress:) forControlEvents:UIControlEventValueChanged];
+}
+
+- (void)playNext {
+	NSLog(@"%ld", (long)self.tag);
+	if (self.tag + 1 < [PlayerSingleton sharedInstance].songListArray.count) {
+		Song *song = [[PlayerSingleton sharedInstance].songListArray objectAtIndex:self.tag + 1];
+		NSLog(@"Next Name:%@", song.songName);
+		[PlayerSingleton sharedInstance].song = song;
+	}
+	else {
+		Song *song = [[PlayerSingleton sharedInstance].songListArray objectAtIndex:0];
+		NSLog(@"Next Name:%@", song.songName);
+		[PlayerSingleton sharedInstance].song = song;
+	}
+	[self playerInit];
+}
+
+- (void)playPrevious {
+	if (self.tag == 0) {
+		self.tag = [PlayerSingleton sharedInstance].songListArray.count - 1;
+	}
+	else {
+		self.tag = self.tag - 1;
+	}
+	Song *song = [[PlayerSingleton sharedInstance].songListArray objectAtIndex:self.tag];
+	[PlayerSingleton sharedInstance].song = song;
+	[self playerInit];
 }
 
 # pragma mark -
@@ -94,9 +129,9 @@
 	if (state == STKAudioPlayerStatePlaying) {
 		[self.playBtn setBackgroundImage:[UIImage imageNamed:@"PauseIcon.png"] forState:UIControlStateNormal];
 	}
-    else if (state == STKAudioPlayerStateBuffering){
-        NSLog(@"buffering");
-    }
+	else if (state == STKAudioPlayerStateBuffering) {
+		NSLog(@"buffering");
+	}
 	else {
 		[self.playBtn setBackgroundImage:[UIImage imageNamed:@"PlayIcon.png"] forState:UIControlStateNormal];
 	}
@@ -104,7 +139,10 @@
 
 /// Raised when an item has finished playing
 - (void)audioPlayer:(STKAudioPlayer *)audioPlayer didFinishPlayingQueueItemId:(NSObject *)queueItemId withReason:(STKAudioPlayerStopReason)stopReason andProgress:(double)progress andDuration:(double)duration {
-	[self playerInit];
+//    NSLog(@"%u",stopReason);
+	if (stopReason == 1) {
+		[self playNext];
+	}
 }
 
 /// Raised when an unexpected and possibly unrecoverable error has occured (usually best to recreate the STKAudioPlauyer)
